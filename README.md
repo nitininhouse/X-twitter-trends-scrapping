@@ -1,4 +1,4 @@
-Here’s the full `README.md` file content that you can directly copy-paste:
+
 
 ```markdown
 # X Twitter Trends Scraper
