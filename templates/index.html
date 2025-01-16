@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X(Twitter) Trends</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 50px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #4b8bf4;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #results {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #results h2 {
+            color: #333;
+        }
+
+        #results ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #results li {
+            font-size: 18px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        #json-data {
+            background-color: #f4f4f9;
+            padding: 10px;
+            margin-top: 30px;
+            border-radius: 8px;
+            text-align: left;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Loading spinner */
+        #loading {
+            margin: 20px auto;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hide loading animation when results are shown */
+        .loading-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>X(Twitter) Trending Topics</h1>
+        <button id="fetchTrends">Show me what's happening?</button>
+        <div id="loading" class="loading-hidden"></div> <!-- Loading spinner -->
+        <div id="results" style="display: none;">
+            <h2>These are the most happening topics as on <span id="date-time"></span></h2>
+            <ul id="trend-list"></ul>
+            <p><strong>IP Address:</strong> <span id="ip-address"></span></p>
+            <div id="json-data"></div>
+            <button id="runAgain">Run Again</button> <!-- Run Again button -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fetchTrends').addEventListener('click', async () => {
+            
+            document.getElementById('loading').classList.remove('loading-hidden');
+            document.getElementById('runAgain').style.display = 'none';
+            
+            const response = await fetch('/fetch-trends');
+            const data = await response.json();
+
+           
+            document.getElementById('loading').classList.add('loading-hidden');
+            document.getElementById('runAgain').style.display = 'inline-block';
+
+            
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('date-time').textContent = data.date_time;
+            document.getElementById('ip-address').textContent = data.ip_address;
+
+            
+            const trendList = document.getElementById('trend-list');
+            trendList.innerHTML = '';
+            data.trends.forEach(trend => {
+                const li = document.createElement('li');
+                li.textContent = trend;
+                trendList.appendChild(li);
+            });
+
+           
+            const jsonData = JSON.stringify(data, null, 4);
+            document.getElementById('json-data').textContent = jsonData;
+        });
+
+        
+        document.getElementById('runAgain').addEventListener('click', async () => {
+            
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('loading').classList.remove('loading-hidden');
+            document.getElementById('runAgain').style.display = 'none';
+
+            
+            const response = await fetch('/fetch-trends');
+            const data = await response.json();
+
+            
+            document.getElementById('loading').classList.add('loading-hidden');
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('date-time').textContent = data.date_time;
+            document.getElementById('ip-address').textContent = data.ip_address;
+
+           
+            const trendList = document.getElementById('trend-list');
+            trendList.innerHTML = '';
+            data.trends.forEach(trend => {
+                const li = document.createElement('li');
+                li.textContent = trend;
+                trendList.appendChild(li);
+            });
+
+            
+            const jsonData = JSON.stringify(data, null, 4);
+            document.getElementById('json-data').textContent = jsonData;
+        });
+    </script>
+
+</body>
+</html>
